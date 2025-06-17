@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\User;
-use Illuminate\Support\Facades\Schema;
+
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,26 +23,27 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        if (app()->environment('production')) {
-            URL::forceScheme('https');
-        }
-
-        // Prevent errors if DB is not migrated yet
-        if (Schema::hasTable('users')) {
-            try {
-                View::composer('*', function ($view) {
-                    $user = Auth::user();
-                    $theme = $user?->equippedTheme();
-                    $view->with([
-                        'switchableUsers' => User::all(),
-                        'activeTheme' => $theme,
-                    ]);
-                });
-            } catch (\Exception $e) {
-                // Log or ignore exception during view setup
-            }
-        }
+   public function boot(): void
+{
+    if (app()->environment('production')) {
+        \Illuminate\Support\Facades\URL::forceScheme('https');
     }
+
+    // Skip this logic if database connection is SQLite and file does not exist
+    try {
+        if (\Schema::hasTable('users')) {
+            \View::composer('*', function ($view) {
+                $user = \Auth::user();
+                $theme = $user?->equippedTheme();
+                $view->with([
+                    'switchableUsers' => \App\Models\User::all(),
+                    'activeTheme' => $theme,
+                ]);
+            });
+        }
+    } catch (\Throwable $e) {
+        // Silently fail during build (no DB yet)
+    }
+}
+
 }
