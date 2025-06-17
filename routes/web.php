@@ -15,7 +15,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\TaskController;
 use App\Http\Middleware\EnsureUserIsEmployee;
-
+ use Illuminate\Support\Facades\Artisan;
 // Guest: Show login
 Route::get('/login', function () {
     return view('login');
@@ -66,6 +66,17 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware([EnsureUserIsEmployee::class])->group(function () {
         Route::resource('diaries', DiaryController::class);
     });
+   
+
+Route::get('/run-migrations', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return '✅ Migrations ran successfully!';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
+
 
     // Task-specific routes
     Route::patch('/tasks/{task}/toggle', [TaskController::class, 'toggle'])->name('tasks.toggle');
