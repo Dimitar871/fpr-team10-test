@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,14 +23,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
-            $user = Auth::user();
-            $theme = $user?->equippedTheme();
-
-            $view->with([
-                'switchableUsers' => User::all(),
-                'activeTheme' => $theme,
-            ]);
-        });
+        if (Schema::hasTable('users')) {
+    View::composer('*', function ($view) {
+        $user = Auth::user();
+        $theme = $user?->equippedTheme();
+        $view->with([
+            'switchableUsers' => User::all(),
+            'activeTheme' => $theme,
+        ]);
+    });
+}
     }
 }
