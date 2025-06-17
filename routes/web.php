@@ -16,7 +16,16 @@ use App\Http\Controllers\LabelController;
 use App\Http\Controllers\TaskController;
 use App\Http\Middleware\EnsureUserIsEmployee;
  use Illuminate\Support\Facades\Artisan;
+ Route::get('/run-migrations', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return '✅ Migrations ran successfully!';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
 // Guest: Show login
+
 Route::get('/login', function () {
     return view('login');
 })->name('login')->middleware('guest');
@@ -68,14 +77,7 @@ Route::middleware(['auth'])->group(function () {
     });
    
 
-Route::get('/run-migrations', function () {
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        return '✅ Migrations ran successfully!';
-    } catch (\Exception $e) {
-        return '❌ Error: ' . $e->getMessage();
-    }
-});
+
 
 
     // Task-specific routes
