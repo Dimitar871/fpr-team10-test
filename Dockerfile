@@ -25,18 +25,20 @@ RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy app files
-COPY . /var/www
+# Copy everything
+COPY . .
 
-# Build assets
+# Install Node and build assets
 RUN npm install && npm run build
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www
+# ✅ Make sure the built assets stay in public/build!
+RUN ls -al public/build
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --optimize-autoloader
+
+# Fix permissions
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
 # Set user and expose port
 USER www-data
