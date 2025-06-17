@@ -29,7 +29,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # Install Node and build assets
-RUN npm install && npm run build
+RUN npm ci && npm run build
 
 # ✅ Make sure the built assets stay in public/build!
 RUN ls -al public/build
