@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -21,22 +22,26 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
+    public function boot(): void
+    {
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
 
-public function boot(): void
-{
-    if (app()->environment('production')) {
-        URL::forceScheme('https');
+        // Prevent errors if DB is not migrated yet
+        if (Schema::hasTable('users')) {
+            try {
+                View::composer('*', function ($view) {
+                    $user = Auth::user();
+                    $theme = $user?->equippedTheme();
+                    $view->with([
+                        'switchableUsers' => User::all(),
+                        'activeTheme' => $theme,
+                    ]);
+                });
+            } catch (\Exception $e) {
+                // Log or ignore exception during view setup
+            }
+        }
     }
-
-    if (Schema::hasTable('users')) {
-        View::composer('*', function ($view) {
-            $user = Auth::user();
-            $theme = $user?->equippedTheme();
-            $view->with([
-                'switchableUsers' => User::all(),
-                'activeTheme' => $theme,
-            ]);
-        });
-    }
-}
 }
