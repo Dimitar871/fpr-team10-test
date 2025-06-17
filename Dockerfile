@@ -1,10 +1,15 @@
+# Use the official PHP image with necessary extensions
 FROM php:8.2-fpm
 
-# Install dependencies
+# Set working directory
+WORKDIR /var/www
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpng-dev \
-    libjpeg-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     zip \
@@ -12,28 +17,24 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     libpq-dev \
-    nano
-
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www
-
-# Copy app files
+# Copy application files
 COPY . .
+
+# ✅ Copy .env.example to .env to use PostgreSQL during build
+RUN cp .env.example .env
 
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Permissions
-RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage
 
-# Expose port
-EXPOSE 8080
-
-# Start Laravel server
-CMD php artisan serve --host=0.0.0.0 --port=8080
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
