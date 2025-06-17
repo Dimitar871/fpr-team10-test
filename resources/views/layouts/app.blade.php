@@ -7,8 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/webp" href="{{ asset('images/tab_logo.webp') }}">
     <title>Syntess Vitality</title>
-    @vite('resources/css/app.css')
-    @vite(['resources/js/modal-handler.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/modal-handler.js'])
     @php
         $accent = $activeTheme?->accent_color ?? '0000ff';
         $accentR = hexdec(substr($accent, 0, 2));
