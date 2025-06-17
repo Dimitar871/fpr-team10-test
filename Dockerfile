@@ -45,4 +45,4 @@ USER www-data
 EXPOSE 8080
 
 # Start PHP server
-CMD ["sh", "-c", "php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=8000"]
+CMD ["sh", "-c", "php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=8080"]
