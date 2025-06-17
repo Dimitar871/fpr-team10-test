@@ -18,14 +18,13 @@ RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy app files including vendor directory
 COPY . /var/www
-
-COPY .env.example /var/www/.env
 
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www
 
-RUN composer install --optimize-autoloader --no-dev
+# **Removed composer install step because vendor is included**
 
 USER www-data
 
