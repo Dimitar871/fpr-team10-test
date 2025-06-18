@@ -7,6 +7,35 @@
         use Illuminate\Support\Facades\Auth;
         $user = Auth::user();
     @endphp
+<script>
+        // Toggle the visibility of the label filter dropdownAdd commentMore actions
+            function toggleLabelDropdown() {
+                const dropdown = document.getElementById('labelDropdown');
+                dropdown.classList.toggle('hidden');
+            }
+
+            // Remove a selected label from the filter by clicking on the cross icon
+            function removeLabel(labelId) {
+                // Find the checkbox that suits the label being removed
+                const checkbox = document.querySelector(input[name="labels[]"][value="${labelId}"]);
+                if (checkbox) {
+                    // Uncheck the checkbox and submit the form to update the filter
+                    checkbox.checked = false;
+                    checkbox.form.submit();
+                }
+            }
+
+            // Close the label dropdown when clicking outside of it
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('labelDropdown');
+                const filterButton = event.target.closest('button');
+
+                // Close if clicking outside both the dropdown and the filter button
+                if (!dropdown.contains(event.target) && !filterButton) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        </script>
     <main class="w-full h-full flex flex-col gap-4 max-w-[800px] mx-auto">
         <!-- Navbar -->
         <div class="flex flex-col gap-4">
