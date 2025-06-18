@@ -37,6 +37,10 @@ RUN ls -al public/build
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Install Blade Heroicons
+RUN composer require blade-ui-kit/blade-heroicons
+
+
 # Fix permissions
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
